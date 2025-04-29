@@ -1,0 +1,32 @@
+name: Refresh Naver Cookies
+
+on:
+  schedule:
+    - cron:  '0 */2 * * *'   # 2시간마다 한국시간 기준 실행
+  workflow_dispatch:         # 수동 실행 버튼
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          pip install playwright
+          playwright install chromium
+      - name: Run login script
+        env:
+          NAVER_ID:  ${{ secrets.NAVER_ID }}
+          NAVER_PW:  ${{ secrets.NAVER_PW }}
+        run: python scripts/login_and_dump_cookies.py
+      - name: Commit cookie file
+        run: |
+          git config user.name  github-actions
+          git config user.email github-actions@github.com
+          git add data/naver_cookies.json
+          git commit -m "Auto-update cookies $(date -u '+%Y%m%dT%H%M%SZ')" || echo "No changes"
+          git push
