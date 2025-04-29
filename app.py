@@ -22,8 +22,8 @@ cookies = {
     "SRT30": "1745950084",
     "SRT5": "1745950084",
     "nid_inf": "2007784581",
-    "NID_AUT": "oqWl0bCVijBdZkmdxkfIKnNPbh3ZtUtc9bElBGpkHk5DyIOgA7rbsxm3rNsZ56Qv",
-    "NID_SES": "AAABsPHPUuHdNh50pLJg/8FrcZWbJY1v7HtBXmvJt+XXyOJTIhr7okT7rOmA5YR5PdpLzfNw4+Rkf9UJHzyGLb58ZTLvgbyD7GgAmmJXufJKPPw0kHkhhXpMawYWl4VbvUJpVeGSBdO2UJV/5qKaeAahRauAonCazTeiokYds7MbvS1f5KmR/pe+JVSskiPp3bdfcQM2ZurWY8rPhcvfFmCqlJKMNECxMFkHUB0oFFq00y++Ar48MJIFrq+1XiCjkuEVKEH9m7b2P9zsfoQ92J6/c84nZUl2iyAk6pTgxFW7VMf1l2w3lATbzUq9wOsh9weo3hXGOHsGdobPzj6EB/RC2bjQVgoQbFQzm5sBn+CfY+6do9K7RfChdRb+ZtIzrVknaayT1knonxwzV/SPdk2za+rc9LghY06kVL8ttU+Jzb4+74b/du/lIAfkn+Qzpk/TES9AdrzO1g1DvZ0TjKJd4JjfP7Oe3x0yFYesmvjDFPGpKfNPhOE/wGjXp9iERUOGMxBgt0FHF7vCq5lIateMDTFcas7iQK+Hp7B2EzMAWAMnHOeaijQ==",
+    "NID_AUT": "oqWl0bCVjiBdZKmddxFIKnNPBh3ZtUtc9bElBGpkHk5DylOgAr7bsmx3rNsZ56Qv",
+    "NID_SES": "AAABsPHPUuHdNh50pLJG/8FrcZWbJ1V7htBXmvJm+XVXyOITrH7okTKrOmA5YR5PdpLZfNnw4+Rkf9UHJzyGLb58ZTZLvgbvD7GgAmmJXufJKPPw0kHHhXpMawYWl4vVbUUpVeC58BOdJ2UV/5aKgeahAaRuAonCazTeiIokYds7MbvS1fSKmR/pe+JVSskiPp3bdfcQMZUarWy87PhchVFmCIqJKMNECxMFkHU8DoFFq00y++Ar48MJIFrqF+1XiCkjuEVKEH9m78VhZP9zfosGQJz6/c84nXZU2iILyA6kP9kjTgxFW7WMvTl12vvI3ATbzUq9WOsb9weo3hXGOH8sGd0bPzj6EB/RC2bjQVgoQbFQzm5sBn+cFY+6do9K7RfPCHRadTb+Zlt7kVnaayT1nkonwxzV/SPdkZ2a+rcPgLhY06KvL8tU+lzb4+74b/du/IlAfkn+Qzpk/TES9Adrz01g1Dvz0JTkJ4d4ljP7Oe3x9oFYJesmwqjDFPDgFkNPhOE/wGjXp9iERUOGMxBgt0FHf7zVGq5llatEMDTFcas7iQk+Hp78EzMAWAmH0eaijQ==",
     "BUC": "wC6mHThXTfTeF4kEVmvpeunRhV4jjKfEo2a5un_TQA",
     "REALESTATE": "Wed%20Apr%2029%202025%2003%3A48%3A48%20GMT%2B0900(Korean%20Standard%20Time)",
 }
@@ -33,7 +33,7 @@ headers = {
     "Accept": "*/*",
     "Accept-Encoding": "gzip, deflate, br, zstd",
     "Accept-Language": "ko,en-US;q=0.9,en;q=0.8,lg;q=0.7",
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlJFQUxFU1RBVEUiLCJpYXQiOjE3MzgyODI2MzgsImV4cCI6MTczODI5MzgzOH0.-t3Y4c5Yw5Y1U8U5p8z3fQ7w5UoXj7v8l5U8z3fQ7w5U",  # 실제 값은 이미지에서 복사
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlJFQUxFU1RBVEUiLCJpYXQiOjE3NDU5NTIzMTIsImV4cCI6MTc0NTk2MzExMn0.jzmEpMedwucOxfnfDaVf1qyITZ9mCkhmQu1VI7s2ETQ",  # 실제 값은 이미지에서 복사
     "Referer": "https://new.land.naver.com/complexes?",
     "Sec-Ch-Ua": "\"Google Chrome\";v=\"135\", \"Not-A.Brand\";v=\"8\", \"Chromium\";v=\"135\"",
     "Sec-Ch-Ua-Mobile": "?0",
