@@ -98,7 +98,7 @@ CSV로 저장한 뒤 바로 다운로드할 수 있습니다.
 # 입력 폼
 with st.form("input_form"):
     complex_input = st.text_input(
-        "단지 번호 목록 (예: 110991,123456…)", value="5049"
+        "단지 번호 목록 (예: 110991,123456…)", value="110991"
     )
     filename = st.text_input(
         "저장할 CSV 파일명", value="complex_overview.csv"
