@@ -1,90 +1,145 @@
-import streamlit as st
-import requests
+# file: app.py
+import os
+from pathlib import Path
+from typing import Dict, Any, List
+
 import pandas as pd
+import requests
+import streamlit as st
 
-# Streamlit page setup
-st.set_page_config(page_title="Real Estate Listings Viewer", layout="wide")
-st.title("Real Estate Listings from Pages 1 to 10")
-st.markdown("This page fetches and displays real estate listings from pages 1 to 10 using the Naver Real Estate API.")
-
-# Define the cookies and headers as provided
-cookies = {
-    "NNB": "2NONCTNLIE0GO",
-    "ASID": "7c6fa45e00000192fbaff11000001ff",
-    "_fbp": "fb.1.1744628216269.972020173418817331",
-    "_fwb": "64cuR6OKRRAkvfQJCWaXQm.1744948363977",
-    "landHomeFlashUseYn": "Y",
-    "fwb": "64cuR6OKRRAkvfQJCWaXQm.1744948363977",
-    "NAC": "JAUGBkQuRFFR",
-    "nhn.realestate.article.rlet_type_cd": "A01",
-    "nhn.realestate.article.trade_type_cd": "",
-    "NACT": "1",
-    "SRT30": "1745950084",
-    "SRT5": "1745950084",
-    "nid_inf": "2007784581",
-    "NID_AUT": "oqWl0bCVjiBdZKmddxFIKnNPBh3ZtUtc9bElBGpkHk5DylOgAr7bsmx3rNsZ56Qv",
-    "NID_SES": "AAABsPHPUuHdNh50pLJG/8FrcZWbJ1V7htBXmvJm+XVXyOITrH7okTKrOmA5YR5PdpLZfNnw4+Rkf9UHJzyGLb58ZTZLvgbvD7GgAmmJXufJKPPw0kHHhXpMawYWl4vVbUUpVeC58BOdJ2UV/5aKgeahAaRuAonCazTeiIokYds7MbvS1fSKmR/pe+JVSskiPp3bdfcQMZUarWy87PhchVFmCIqJKMNECxMFkHU8DoFFq00y++Ar48MJIFrqF+1XiCkjuEVKEH9m78VhZP9zfosGQJz6/c84nXZU2iILyA6kP9kjTgxFW7WMvTl12vvI3ATbzUq9WOsb9weo3hXGOH8sGd0bPzj6EB/RC2bjQVgoQbFQzm5sBn+cFY+6do9K7RfPCHRadTb+Zlt7kVnaayT1nkonwxzV/SPdkZ2a+rcPgLhY06KvL8tU+lzb4+74b/du/IlAfkn+Qzpk/TES9Adrz01g1Dvz0JTkJ4d4ljP7Oe3x9oFYJesmwqjDFPDgFkNPhOE/wGjXp9iERUOGMxBgt0FHf7zVGq5llatEMDTFcas7iQk+Hp78EzMAWAmH0eaijQ==",
-    "BUC": "wC6mHThXTfTeF4kEVmvpeunRhV4jjKfEo2a5un_TQA",
-    "REALESTATE": "Wed%20Apr%2029%202025%2003%3A48%3A48%20GMT%2B0900(Korean%20Standard%20Time)",
+# ──────────────────────────────────────────────────────────────────────
+# 0) 환경 변수 / secrets 에 인증정보 저장하기 ─────────────────────────
+#    - Streamlit Cloud에 배포할 땐 Settings ▸ Secrets 탭에서 입력
+# ──────────────────────────────────────────────────────────────────────
+COOKIES = {
+    "NNB": st.secrets["NNB"],
+    "NAC": st.secrets["NAC"],
+    # 필요 시 추가 쿠키…
+}
+HEADERS = {
+    "accept": "*/*",
+    "accept-language": "ko,en-US;q=0.9",
+    "referer": "https://new.land.naver.com/",
+    "user-agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/123.0.0.0 Safari/537.36"
+    ),
+    "authorization": f"Bearer {st.secrets['JWT']}",
 }
 
+# ──────────────────────────────────────────────────────────────────────
+# 1) API 호출 & 데이터 전처리 함수
+# ──────────────────────────────────────────────────────────────────────
+@st.cache_data(show_spinner=False)
+def fetch_complex_overview(complex_no: str) -> Dict[str, Any]:
+    """단지 번호(complex_no)의 개요 정보 조회"""
+    url = f"https://new.land.naver.com/api/complexes/overview/{complex_no}"
+    resp = requests.get(
+        url,
+        params={"complexNo": complex_no},
+        cookies=COOKIES,
+        headers=HEADERS,
+        timeout=10,
+    )
+    resp.raise_for_status()
+    return resp.json()
 
-headers = {
-    "Accept": "*/*",
-    "Accept-Encoding": "gzip, deflate, br, zstd",
-    "Accept-Language": "ko,en-US;q=0.9,en;q=0.8,lg;q=0.7",
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlJFQUxFU1RBVEUiLCJpYXQiOjE3NDU5NTIzMTIsImV4cCI6MTc0NTk2MzExMn0.jzmEpMedwucOxfnfDaVf1qyITZ9mCkhmQu1VI7s2ETQ",  # 실제 값은 이미지에서 복사
-    "Referer": "https://new.land.naver.com/complexes?",
-    "Sec-Ch-Ua": "\"Google Chrome\";v=\"135\", \"Not-A.Brand\";v=\"8\", \"Chromium\";v=\"135\"",
-    "Sec-Ch-Ua-Mobile": "?0",
-    "Sec-Ch-Ua-Platform": "\"Windows\"",
-    "Sec-Fetch-Dest": "empty",
-    "Sec-Fetch-Mode": "cors",
-    "Sec-Fetch-Site": "same-origin",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
-}
+
+def flatten_overview(data: Dict[str, Any]) -> Dict[str, Any]:
+    """API 응답 JSON → 1-레벨 dict (CSV/표용)"""
+    rp = data.get("realPrice", {})
+    return {
+        "단지번호": data.get("complexNo"),
+        "단지명": data.get("complexName"),
+        "준공일": data.get("useApproveYmd"),
+        "세대수": data.get("totalHouseHoldCount"),
+        "동수": data.get("totalDongCount"),
+        "위도": data.get("latitude"),
+        "경도": data.get("longitude"),
+        "최저매매가(만)": data.get("minPrice"),
+        "최고매매가(만)": data.get("maxPrice"),
+        "최근거래일": rp.get("formattedTradeYearMonth"),
+        "최근거래가(만)": rp.get("dealPrice"),
+        "층": rp.get("floor"),
+        "전용면적": rp.get("exclusiveArea"),
+    }
 
 
-
-# Function to get data from the API for pages 1 to 10
-@st.cache_data
-def fetch_all_data():
-    all_articles = []
-    for page in range(1, 11):
+def collect_overviews(complex_list: List[str]) -> pd.DataFrame:
+    """여러 단지를 조회해 DataFrame 반환"""
+    records = []
+    for cplx in complex_list:
         try:
-            # Make the request for the specific page
-            url = f'https://new.land.naver.com/api/articles/complex/111515?realEstateType=APT%3AABYG%3AJGC%3APRE&tradeType=A1&tag=%3A%3A%3A%3A%3A%3A%3A%3A&rentPriceMin=0&rentPriceMax=900000000&priceMin=0&priceMax=900000000&areaMin=0&areaMax=900000000&oldBuildYears&recentlyBuildYears&minHouseHoldCount=300&maxHouseHoldCount&showArticle=false&sameAddressGroup=true&minMaintenanceCost&maxMaintenanceCost&priceType=RETAIL&directions=&page={page}&complexNo=111515&buildingNos=&areaNos=&type=list&order=prc'
-            response = requests.get(url, cookies=cookies, headers=headers)
-
-            # Verify response is valid JSON
-            if response.status_code == 200:
-                data = response.json()
-                articles = data.get("articleList", [])
-                all_articles.extend(articles)
-            else:
-                st.warning(f"Failed to retrieve data for page {page}. Status code: {response.status_code}")
-        except requests.exceptions.RequestException as e:
-            st.error(f"An error occurred: {e}")
-        except ValueError:
-            st.error(f"Non-JSON response for page {page}.")
-
-    return all_articles
-
-# Fetch data for all pages
-data = fetch_all_data()
-
-# Transform data into a DataFrame if data is available
-if data:
-    df = pd.DataFrame(data)
-    # Select columns to display
-    df_display = df[["articleNo", "articleName", "realEstateTypeName", "tradeTypeName", "floorInfo",
-                     "dealOrWarrantPrc", "areaName", "direction", "articleConfirmYmd", "articleFeatureDesc",
-                     "tagList", "buildingName", "sameAddrMaxPrc", "sameAddrMinPrc", "realtorName"]]
-
-    # Display the table in Streamlit with a clean, readable layout
-    st.write("### Real Estate Listings - Pages 1 to 10")
-    st.dataframe(df_display)
-else:
-    st.write("No data available.")
+            raw = fetch_complex_overview(cplx.strip())
+            records.append(flatten_overview(raw))
+        except Exception as e:
+            st.warning(f"⚠️ {cplx} 조회 실패: {e}")
+    return pd.DataFrame(records)
 
 
+# ──────────────────────────────────────────────────────────────────────
+# 2) Streamlit UI
+# ──────────────────────────────────────────────────────────────────────
+st.set_page_config(
+    page_title="네이버 부동산 단지 개요 수집기",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+st.title("🏙️ 네이버 부동산 단지 개요 수집기")
+st.markdown(
+    """
+단지 번호를 **콤마(,)** 로 구분해서 입력하고 **[데이터 수집]** 을 누르세요.  
+CSV로 저장한 뒤 바로 다운로드할 수 있습니다.
+"""
+)
+
+# 입력 폼
+with st.form("input_form"):
+    complex_input = st.text_input(
+        "단지 번호 목록 (예: 110991,123456…)", value="110991"
+    )
+    filename = st.text_input(
+        "저장할 CSV 파일명", value="complex_overview.csv"
+    )
+    submitted = st.form_submit_button("데이터 수집")
+
+# 버튼 클릭 시 실행
+if submitted:
+    complex_numbers = [x for x in complex_input.split(",") if x.strip()]
+    if not complex_numbers:
+        st.error("단지 번호를 한 개 이상 입력해 주세요.")
+        st.stop()
+
+    with st.spinner("데이터 수집 중…"):
+        df = collect_overviews(complex_numbers)
+
+    if df.empty:
+        st.error("조회된 데이터가 없습니다.")
+    else:
+        st.success(f"{len(df):,}건의 데이터를 가져왔습니다!")
+
+        # 표 출력
+        st.dataframe(df, use_container_width=True)
+
+        # CSV 다운로드
+        csv_data = df.to_csv(index=False, encoding="utf-8-sig")
+        st.download_button(
+            label="CSV 다운로드",
+            data=csv_data,
+            file_name=filename,
+            mime="text/csv",
+        )
+
+        # 선택: 저장 경로에도 파일 기록 (로컬 실행용)
+        try:
+            Path(filename).write_bytes(csv_data.encode("utf-8-sig"))
+        except Exception:
+            pass
+
+# 사이드바 도움말
+with st.sidebar.expander("❓ 사용법"):
+    st.write(
+        """
+1. `.streamlit/secrets.toml` 또는 **Streamlit Cloud → Secrets** 에  
